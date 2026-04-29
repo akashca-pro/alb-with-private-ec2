@@ -130,6 +130,7 @@ module "alb" {
   vpc_id = module.vpc.vpc_id
 
   load_balancer_type = "application"
+  enable_deletion_protection = false
   subnets            = module.vpc.public_subnets
   security_groups    = [aws_security_group.alb_sg.id]
 
