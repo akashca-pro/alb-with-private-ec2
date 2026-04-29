@@ -134,22 +134,10 @@ module "alb" {
   security_groups    = [aws_security_group.alb_sg.id]
 
   target_groups = {
-    tg1 = {
-      name          = "task-3-46-tg1"
+    tg = {
+      name          = "task-3-46-tg"
       target_type  = "instance"
       target_id    = module.ec2["ec2_1"].id
-      port          = 80
-      protocol      = "HTTP"
-
-      health_check = {
-        path = "/"
-      }
-    }
-
-    tg2 = {
-      name          = "task-3-46-tg2"
-      target_type  = "instance"
-      target_id    = module.ec2["ec2_2"].id
       port          = 80
       protocol      = "HTTP"
 
@@ -166,10 +154,16 @@ module "alb" {
 
       weighted_forward = {
         target_groups = [
-          { target_group_key = "tg1", weight = 1 },
-          { target_group_key = "tg2", weight = 1 }
+          { target_group_key = "tg", weight = 1 }
         ]
       }
     }
   }
+}
+
+# Add the second EC2 instance to the same target group.
+resource "aws_lb_target_group_attachment" "ec2_2_to_tg" {
+  target_group_arn = module.alb.target_groups["tg"].arn
+  target_id         = module.ec2["ec2_2"].id
+  port              = 80
 }
